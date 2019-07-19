@@ -1,0 +1,26 @@
+#JAVA DATAFLOW OPERATOR ON AIRFLOW:
+- When using DataflowOperator [1] you need to pass "jar" parameter. This must be built before using "mvn package" command:
+ 
+1. Using java-8 instance 
+ 
+2. For a known working pipeline, follow [2] (additional "<plugins>" in pom may throw additional errors), run "mvn package" --> I ran this in the "/DataflowTemplatesCopy/", and my file is called:
+"""google-cloud-teleport-java-0.1-SNAPSHOT.jar"""
+ 
+3. Make sure that the .jar file is executable in DF by running:
+"""
+java -jar target/beam-examples-bundled-1.0.0.jar \
+  --runner=DataflowRunner \
+  --project=<YOUR_GCP_PROJECT_ID> \
+  --tempLocation=gs://<YOUR_GCS_BUCKET>/temp/
+"""
+ 
+In my case, as I had to add additional options it is:
+"""
+java -jar target/google-cloud-teleport-java-0.1-SNAPSHOT.jar --runner=DataflowRunner --project=<YOUR_GCP_PROJECT_ID> --tempLocation=gs://<YOUR_GCP_BUCKET>/df/temp --inputTopic=<INPUT_TOPIC> --outputTableSpec=<OUTPUT_TABLE>
+"""
+ 
+4. Copy the .jar file to your data folder in your Composer Env. bucket: "gs://../data"
+5. Upload a Dag like "dataflow-composer-java.py" in this repo
+ 
+[1]: https://airflow.apache.org/integration.html#dataflowjavaoperator
+[2]: https://beam.apache.org/documentation/runners/dataflow/#self-executing-jar
